@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Finance Tracker</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/analysis">Analysis</a></li>
+        </ul>
+    </nav>
+</header>
+<main>
+    <section>
+        <h2>Все транзакции</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Тип</th>
+                    <th>Описание</th>
+                    <th>Сумма</th>
+                    <th>Категория</th>
+                    <th>Дата добавления</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Loop through incomes -->
+                <tr th:each="income : ${incomes}">
+                    <td>Доход</td>
+                    <td th:text="${income.description}"></td>
+                    <td th:text="${income.amount}"></td>
+                    <td th:text="${income.category}"></td>
+                    <td th:text="${#dates.format(income.date, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+                <!-- Loop through expenses -->
+                <tr th:each="expense : ${expenses}">
+                    <td>Расход</td>
+                    <td th:text="${expense.description}"></td>
+                    <td th:text="${expense.amount}"></td>
+                    <td th:text="${expense.category}"></td>
+                    <td th:text="${#dates.format(expense.date, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Form for adding new transaction -->
+    <section>
+        <h2>Добавление новой транзакции</h2>
+        <form action="/addTransaction" method="post">
+            <label for="type">Тип:</label>
+            <select name="type" id="type">
+                <option value="income">Доходы</option>
+                <option value="expense">Расходы</option>
+            </select><br>
+            <label for="category">Категория:</label>
+            <select name="category" id="category">
+                <option value="Продукты">Продукты</option>
+                <option value="Рестораны">Рестораны</option>
+                <option value="Транспорт">Транспорт</option>
+                <option value="Медицина">Медицина</option>
+                <option value="Такси">Такси</option>
+                <option value="Зарплата">Зарплата</option>
+                <option value="Перевод">Перевод</option>
+                <option value="Остальное">Остальное</option>
+            </select><br>
+            <label for="description">Описание:</label>
+            <input type="text" id="description" name="description"><br>
+            <label for="amount">Сумма:</label>
+            <input type="number" id="amount" name="amount"><br>
+            <button type="submit">Добавить</button>
+        </form>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2024 Finance Tracker</p>
+</footer>
+
+<!-- Подключение библиотеки Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('incomeExpenseChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Income', 'Expense'],
+            datasets: [{
+                label: 'Amount',
+                data: [/* Insert actual values here */],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 99, 132, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+</body>
+</html>

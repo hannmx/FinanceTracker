@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Analysis</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Подключение библиотеки Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Подключение библиотеки datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.js"></script>
+    <!-- Подключение библиотеки AnyChart -->
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-bundle.min.js"></script>
+</head>
+<body>
+<header>
+    <h1>Finance Tracker</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/analysis">Analysis</a></li>
+        </ul>
+    </nav>
+</header>
+<div class="container">
+
+    <!-- Общая статистика -->
+    <div>
+        <h2>Total Income: <span th:text="${totalIncome}"></span></h2>
+        <h2>Total Expense: <span th:text="${totalExpense}"></span></h2>
+        <h2>Balance: <span th:text="${balance}"></span></h2>
+    </div>
+
+    <!-- Форма для выбора даты -->
+    <div class="datepicker">
+        <label for="datepicker">Select Date:</label>
+        <input type="text" id="datepicker" name="selectedDate">
+    </div>
+
+    <!-- График -->
+    <canvas id="myChart"></canvas>
+
+    <!-- Кольцевая диаграмма -->
+    <canvas id="donutChartCanvas"></canvas>
+
+    <!-- Место для отображения результатов анализа -->
+    <div id="result">
+        <!-- Здесь будет выводиться результат анализа -->
+    </div>
+</div>
+
+<!-- Подключение скриптов для работы с datepicker и отправки запроса на сервер -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Проверка, что DOM полностью загружен
+    $(document).ready(function() {
+        // Инициализация datepicker
+        $('#datepicker').datepicker({
+            onSelect: function (formattedDate, date, inst) {
+                // При выборе даты отправляем запрос на сервер с выбранной датой
+                $.ajax({
+                    type: 'GET',
+                    url: '/analysis',
+                    data: { selectedDate: formattedDate },
+                    success: function(response) {
+                        // Обновляем содержимое блока результатов
+                        $('#result').html(response);
+                        // Отображение графиков или диаграмм
+                        renderCharts(response);
+                    },
+                    error: function() {
+                        // В случае ошибки выведите сообщение пользователю
+                        $('#result').html('<p>Error occurred while fetching data.</p>');
+                    }
+                });
+            }
+        });
+
+        // Отправляем запрос на сервер при загрузке страницы для отображения графика по текущей дате
+        $.ajax({
+            type: 'GET',
+            url: '/analysis',
+            success: function(response) {
+                // Обновляем содержимое блока результатов
+                $('#result').html(response);
+                // Отображение графиков или диаграмм
+                renderCharts(response);
+            },
+            error: function() {
+                // В случае ошибки выведите сообщение пользователю
+                $('#result').html('<p>Error occurred while fetching data.</p>');
+            }
+        });
+    });
+
+    // Функция для отображения графиков или диаграмм
+    function renderCharts(data) {
+        // Выводим полученные данные в консоль для отладки
+        console.log(data);
+
+        // Извлекаем данные из объекта data, переданного Thymeleaf
+        var totalIncome = data.totalIncome;
+        var totalExpense = data.totalExpense;
+        var balance = data.balance;
+
+        // Пример создания графика с использованием Chart.js
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Total Income', 'Total Expense', 'Balance'],
+                datasets: [{
+                    label: 'Amount',
+                    data: [totalIncome, totalExpense, balance],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(75, 192, 192, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Отображение кольцевой диаграммы
+        renderDonutChart(data);
+    }
+
+    // Функция для отображения кольцевой диаграммы
+    function renderDonutChart(data) {
+        var totalIncome = parseFloat(data.totalIncome);
+        var totalExpense = parseFloat(data.totalExpense);
+
+        // Создаем экземпляр кольцевой диаграммы
+        anychart.onDocumentReady(function () {
+            // Очищаем содержимое элемента, чтобы избежать дублирования
+            document.getElementById("donutChartCanvas").innerHTML = "";
+
+            // Создаем экземпляр кольцевой диаграммы
+            var chart = anychart.pie([
+                ["Total Income", totalIncome],
+                ["Total Expense", totalExpense]
+            ]);
+
+            // Устанавливаем внутренний радиус для создания кольцевой диаграммы
+            chart.innerRadius("50%");
+            // Устанавливаем заголовок диаграммы
+            chart.title("Finance Overview");
+
+            // Отображаем диаграмму в указанном контейнере
+            chart.container("donutChartCanvas");
+            chart.draw();
+        });
+    }
+</script>
+
+</body>
+</html>
