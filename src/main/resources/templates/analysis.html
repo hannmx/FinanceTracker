@@ -29,9 +29,9 @@
 <div class="container">
     <!-- Общая статистика -->
     <div>
-        <h2>Total Income: <span th:text="${totalIncome}"></span></h2>
-        <h2>Total Expense: <span th:text="${totalExpense}"></span></h2>
-        <h2>Balance: <span th:text="${balance}"></span></h2>
+        <h2>Общий доход: <span th:text="${totalIncome}"></span></h2>
+        <h2>Общий расход: <span th:text="${totalExpense}"></span></h2>
+        <h2>Фактический остаток: <span th:text="${balance}"></span></h2><br>
     </div>
 
     <!-- Форма для выбора даты -->
@@ -42,14 +42,13 @@
     </div>
 </div>
 <div align="center" style="width: 1000px;">
-    <h2>Charts Example</h2>
-    <div id="incomeChart"></div> <!-- Контейнер для диаграммы доходов -->
-    <div id="expenseChart"></div> <!-- Контейнер для диаграммы расходов -->
+    <h2>Анализ</h2>
+    <div id="incomeChart"></div>
+    <div id="expenseChart"></div>
 </div>
-
 <script th:inline="javascript">
     var incomeData = /*[[${incomeByCategory}]]*/ {};
-    var expenseData = /*[[${expenseByCategory}]]*/ {}; // Добавлено для данных о расходах
+    var expenseData = /*[[${expenseByCategory}]]*/ {};
 
     google.charts.load('current', {
         packages: ['corechart']
@@ -57,8 +56,13 @@
     google.charts.setOnLoadCallback(drawCharts);
 
     function drawCharts() {
-        drawPieChart('incomeChart', incomeData, 'Income by Category');
-        drawPieChart('expenseChart', expenseData, 'Expense by Category');
+        // Проверка на пустоту данных перед отрисовкой диаграмм
+        if (!jQuery.isEmptyObject(incomeData)) {
+            drawPieChart('incomeChart', incomeData, 'Income by Category');
+        }
+        if (!jQuery.isEmptyObject(expenseData)) {
+            drawPieChart('expenseChart', expenseData, 'Expense by Category');
+        }
     }
 
     function drawPieChart(containerId, data, title) {
@@ -78,14 +82,32 @@
         chart.draw(dataTable, options);
     }
 
+    // Форматирование даты в формат "год-месяц-день"
+    function formatDate(date) {
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+
+        // Добавляем ведущий ноль, если число меньше 10
+        if (day < 10) {
+            day = '0' + day;
+        }
+        if (month < 10) {
+            month = '0' + month;
+        }
+
+        return year + '-' + month + '-' + day;
+    }
+
     $(document).ready(function() {
         $('#filterButton').on('click', function() {
             var selectedDate = $('#datepicker').val();
+            var formattedDate = selectedDate ? formatDate(new Date(selectedDate)) : "";
 
             $.ajax({
                 url: '/analysis/filter',
                 type: 'GET',
-                data: { selectedDate: selectedDate },
+                data: { selectedDate: formattedDate },
                 success: function(response) {
                     updatePageWithData(response);
                 },
@@ -101,9 +123,13 @@
         $('#totalExpense').text(data.totalExpense);
         $('#balance').text(data.balance);
 
-        drawPieChart('incomeChart', data.incomeByCategory, 'Income by Category');
-        drawPieChart('expenseChart', data.expenseByCategory, 'Expense by Category');
+        drawPieChart('incomeChart', data.incomeByCategory, 'Доходы по категориям');
+        drawPieChart('expenseChart', data.expenseByCategory, 'Расходы по категориям');
     }
+
 </script>
+<footer>
+    <p>&copy; 2024 Finance Tracker</p>
+</footer>
 </body>
 </html>

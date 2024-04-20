@@ -106,5 +106,11 @@ th {
 }
 
 h2 {
-    color: blue;
+    color: #007bff;
+}
+
+.container {
+    h2{
+        color: #007bff;
+    }
 }

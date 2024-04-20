@@ -174,7 +174,6 @@ public class TransactionController {
     }
 
 
-
     @PostMapping("/editTransaction")
     public String editTransaction(@ModelAttribute Income income, @ModelAttribute Expense expense, Model model) {
         if (income != null) {
