@@ -9,6 +9,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Подключение библиотеки datepicker -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.js"></script>
+    <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script type="text/javascript"
+            src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
 <header>
@@ -32,10 +38,72 @@
     <div class="datepicker">
         <label for="datepicker">Выбор даты:</label>
         <input type="date" id="datepicker" name="selectedDate"><br>
-        <button type="submit">Принять</button>
+        <button type="submit" id="filterButton">Принять</button>
     </div>
-
+</div>
+<div align="center" style="width: 1000px;">
+    <h2>Charts Example</h2>
+    <div id="incomeChart"></div> <!-- Контейнер для диаграммы доходов -->
+    <div id="expenseChart"></div> <!-- Контейнер для диаграммы расходов -->
 </div>
 
+<script th:inline="javascript">
+    var incomeData = /*[[${incomeByCategory}]]*/ {};
+    var expenseData = /*[[${expenseByCategory}]]*/ {}; // Добавлено для данных о расходах
+
+    google.charts.load('current', {
+        packages: ['corechart']
+    });
+    google.charts.setOnLoadCallback(drawCharts);
+
+    function drawCharts() {
+        drawPieChart('incomeChart', incomeData, 'Income by Category');
+        drawPieChart('expenseChart', expenseData, 'Expense by Category');
+    }
+
+    function drawPieChart(containerId, data, title) {
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn('string', 'Category');
+        dataTable.addColumn('number', 'Amount');
+        Object.keys(data).forEach(function(category) {
+            dataTable.addRow([category, data[category]]);
+        });
+
+        var options = {
+            title: title,
+            is3D: true,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById(containerId));
+        chart.draw(dataTable, options);
+    }
+
+    $(document).ready(function() {
+        $('#filterButton').on('click', function() {
+            var selectedDate = $('#datepicker').val();
+
+            $.ajax({
+                url: '/analysis/filter',
+                type: 'GET',
+                data: { selectedDate: selectedDate },
+                success: function(response) {
+                    updatePageWithData(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        });
+    });
+
+    function updatePageWithData(data) {
+        $('#totalIncome').text(data.totalIncome);
+        $('#totalExpense').text(data.totalExpense);
+        $('#balance').text(data.balance);
+
+        drawPieChart('incomeChart', data.incomeByCategory, 'Income by Category');
+        drawPieChart('expenseChart', data.expenseByCategory, 'Expense by Category');
+    }
+</script>
 </body>
 </html>

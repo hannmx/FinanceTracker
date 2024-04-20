@@ -125,5 +125,29 @@ public class TransactionServiceImpl implements TransactionService {
         }
         return categoryWiseExpense;
     }
+
+    @Override
+    public Map<String, Double> getCategoryWiseIncomeByDate(Date date){
+        List<Income> incomes = getIncomesByDate(date);
+        Map<String, Double> categoryWiseIncome = new HashMap<>();
+        for (Income income : incomes) {
+            String category = income.getCategory();
+            double amount = income.getAmount();
+            categoryWiseIncome.put(category, categoryWiseIncome.getOrDefault(category, 0.0) + amount);
+        }
+        return categoryWiseIncome;
+    }
+
+    @Override
+    public Map<String, Double> getCategoryWiseExpenseByDate(Date date){
+        List<Expense> expenses = getExpensesByDate(date);
+        Map<String, Double> categoryWiseExpense = new HashMap<>();
+        for (Expense expense : expenses) {
+            String category = expense.getCategory();
+            double amount = expense.getAmount();
+            categoryWiseExpense.put(category, categoryWiseExpense.getOrDefault(category, 0.0) + amount);
+        }
+        return categoryWiseExpense;
+    }
 }
 

@@ -6,9 +6,10 @@ import org.financetracker.service.TransactionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Controller
 public class TransactionController {
@@ -79,26 +80,18 @@ public class TransactionController {
 
     @GetMapping("/analysis")
     public String showAnalysisPage(Model model) {
-        Date currentDate = new Date();
 
-        // Получаем данные для анализа из сервиса
+        Date currentDate = new Date();
         List<Income> incomes = transactionService.getAllIncomes();
         List<Expense> expenses = transactionService.getAllExpenses();
 
-        // Получаем доходы и расходы за текущий день
         List<Income> incomesToday = transactionService.getIncomesByDate(currentDate);
         List<Expense> expensesToday = transactionService.getExpensesByDate(currentDate);
 
-        // Вычисляем общий доход за все время
         double totalIncome = incomes.stream().mapToDouble(Income::getAmount).sum();
-
-        // Вычисляем общий расход за все время
         double totalExpense = expenses.stream().mapToDouble(Expense::getAmount).sum();
-
-        // Вычисляем баланс
         double balance = totalIncome - totalExpense;
 
-        // Получаем категории доходов и расходов
         Map<String, Double> incomeByCategory = transactionService.getCategoryWiseIncome();
         Map<String, Double> expenseByCategory = transactionService.getCategoryWiseExpense();
 
@@ -113,6 +106,74 @@ public class TransactionController {
 
         return "analysis";
     }
+
+    @GetMapping("/analysis/filter")
+    @ResponseBody
+    public Map<String, Object> filterAnalysisByDate(@RequestParam(required = false) String selectedDate) {
+        if (selectedDate == null || selectedDate.trim().isEmpty()) {
+            // Если дата не выбрана, используйте методы для получения данных за все время
+            return getDataForAllTime();
+        } else {
+            // Парсинг даты и получение данных для выбранной даты
+            return getDataForSelectedDate(selectedDate);
+        }
+    }
+
+    private Map<String, Object> getDataForAllTime() {
+        // Получение данных за все время
+        double totalIncome = transactionService.getTotalIncome();
+        double totalExpense = transactionService.getTotalExpense();
+        double balance = totalIncome - totalExpense;
+        Map<String, Double> incomeByCategory = transactionService.getCategoryWiseIncome();
+        Map<String, Double> expenseByCategory = transactionService.getCategoryWiseExpense();
+
+        // Формируем ответ
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalIncome", totalIncome);
+        response.put("totalExpense", totalExpense);
+        response.put("balance", balance);
+        response.put("incomeByCategory", incomeByCategory);
+        response.put("expenseByCategory", expenseByCategory);
+
+        return response;
+    }
+
+    private Map<String, Object> getDataForSelectedDate(String selectedDate) {
+        // Парсинг даты
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
+        try {
+            date = dateFormat.parse(selectedDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return Collections.emptyMap(); // Возвращаем пустой результат в случае ошибки парсинга
+        }
+
+        // Получаем данные для выбранной даты
+        List<Income> incomes = transactionService.getIncomesByDate(date);
+        List<Expense> expenses = transactionService.getExpensesByDate(date);
+
+        // Вычисляем общий доход и расход за выбранную дату
+        double totalIncome = incomes.stream().mapToDouble(Income::getAmount).sum();
+        double totalExpense = expenses.stream().mapToDouble(Expense::getAmount).sum();
+        double balance = totalIncome - totalExpense;
+
+        // Получаем категории доходов и расходов за выбранную дату
+        Map<String, Double> incomeByCategory = transactionService.getCategoryWiseIncomeByDate(date);
+        Map<String, Double> expenseByCategory = transactionService.getCategoryWiseExpenseByDate(date);
+
+        // Формируем ответ
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalIncome", totalIncome);
+        response.put("totalExpense", totalExpense);
+        response.put("balance", balance);
+        response.put("incomeByCategory", incomeByCategory);
+        response.put("expenseByCategory", expenseByCategory);
+
+        return response;
+    }
+
+
 
     @PostMapping("/editTransaction")
     public String editTransaction(@ModelAttribute Income income, @ModelAttribute Expense expense, Model model) {

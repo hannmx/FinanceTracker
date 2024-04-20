@@ -80,6 +80,7 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+    height: 23px;
 }
 
 /* Стили для таблицы и обертки с прокруткой */
@@ -102,4 +103,8 @@ th, td {
 
 th {
     background-color: #f2f2f2;
+}
+
+h2 {
+    color: blue;
 }

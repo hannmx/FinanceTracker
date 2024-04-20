@@ -37,4 +37,8 @@ public interface TransactionService {
     Map<String, Double> getCategoryWiseIncome();
 
     Map<String, Double> getCategoryWiseExpense();
+
+    Map<String, Double> getCategoryWiseIncomeByDate(Date date);
+    Map<String, Double> getCategoryWiseExpenseByDate(Date date);
+
 }
