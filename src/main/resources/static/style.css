@@ -1,7 +1,11 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f4f4;
     color: #333;
+    ackground-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
 }
 
 header {
@@ -40,7 +44,7 @@ form label {
 
 form input[type="text"],
 form select {
-    width: 100%;
+    width: 20%;
     padding: 10px;
     margin-bottom: 10px;
 }
@@ -53,56 +57,173 @@ form button {
     cursor: pointer;
 }
 
+/* Обновленные стили таблицы */
 table {
     width: 100%;
     border-collapse: collapse;
+    margin: 0; /* Добавлено для разделения секций */
 }
 
-table th, table td {
+th, td {
     padding: 10px;
     border: 1px solid #ddd;
 }
 
-table th {
+th {
     background-color: #f4f4f4;
     font-weight: bold;
+    text-align: left;
 }
 
-table td {
+td {
+    text-align: left;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Стили для таблицы и обертки с прокруткой */
+.table-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x auto;
+    text-align: left;
+}
+
+/* Дополнительные стили для заголовка */
+.table-title {
+    display: block;
+    margin: auto;
+    max-width: 600px;
+    padding: 5px;
+    text-align: left;
+}
+
+.table-title h3 {
+    color: #fafafa;
+    font-size: 30px;
+    font-weight: 400;
+    font-style: normal;
+    font-family: "Roboto", helvetica, arial, sans-serif;
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+}
+
+/* Обновленные стили таблицы */
+.table-fill {
+    background: white;
+    border-radius: 3px;
+    border-collapse: collapse;
+    margin: auto;
+    max-width: 1000px;
+    padding: 5px;
+    width: 100%;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    animation: float 5s infinite;
+}
+
+.table-fill th {
+    color: #D5DDE5;
+    background: #1b1e24;
+    border-bottom: 4px solid #9ea7af;
+    border-right: 1px solid #343a45;
+    font-size: 23px;
+    font-weight: 150;
+    padding: 24px;
+    text-align: left;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    vertical-align: middle;
+}
+
+.table-fill th:first-child {
+    border-top-left-radius: 3px;
+}
+
+.table-fill th:last-child {
+    border-top-right-radius: 3px;
+    border-right: none;
+}
+
+.table-fill tr {
+    border-top: 1px solid #C1C3D1;
+    border-bottom: 1px solid #C1C3D1;
+    color: #666B85;
+    font-size: 16px;
+    font-weight: normal;
+    text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+}
+
+.table-fill tr:hover td {
+    background: #4E5066;
+    color: #FFFFFF;
+    border-top: 1px solid #22262e;
+}
+
+.table-fill tr:first-child {
+    border-top: none;
+}
+
+.table-fill tr:last-child {
+    border-bottom: none;
+}
+
+.table-fill tr:nth-child(odd) td {
+    background: #EBEBEB;
+}
+
+.table-fill tr:nth-child(odd):hover td {
+    background: #4E5066;
+}
+
+.table-fill tr:last-child td:first-child {
+    border-bottom-left-radius: 3px;
+}
+
+.table-fill tr:last-child td:last-child {
+    border-bottom-right-radius: 3px;
+}
+
+.table-fill td {
+    background: #FFFFFF;
+    padding: 20px;
+    text-align: left;
+    vertical-align: middle;
+    font-weight: 300;
+    font-size: 18px;
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #C1C3D1;
+}
+
+.table-fill td:last-child {
+    border-right: 0px;
+}
+
+.table-fill th.text-left, .table-fill td.text-left {
+    text-align: left;
+}
+
+.table-fill th.text-center, .table-fill td.text-center {
     text-align: center;
+}
+
+.table-fill th.text-right, .table-fill td.text-right {
+    text-align: right;
 }
 
 footer {
     background-color: #007bff;
     color: #fff;
     text-align: center;
-    padding: 10px 0;
+    padding: 20px 0;
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 23px;
 }
 
-/* Стили для таблицы и обертки с прокруткой */
-.table-wrapper {
-    max-height: 400px; /* Максимальная высота таблицы */
-    overflow-y: auto; /* Добавление вертикальной прокрутки */
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-th, td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #f2f2f2;
+footer p {
+    margin: 0;
+    font-size: 16px;
 }
 
 h2 {
@@ -113,4 +234,37 @@ h2 {
     h2{
         color: #007bff;
     }
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.datepicker {
+    margin-bottom: 15px;
+}
+
+.datepicker label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.datepicker input[type="date"] {
+    width: 20%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.datepicker button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
 }

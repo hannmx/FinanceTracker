@@ -58,10 +58,10 @@
     function drawCharts() {
         // Проверка на пустоту данных перед отрисовкой диаграмм
         if (!jQuery.isEmptyObject(incomeData)) {
-            drawPieChart('incomeChart', incomeData, 'Income by Category');
+            drawPieChart('incomeChart', incomeData, 'Доходы по категориям');
         }
         if (!jQuery.isEmptyObject(expenseData)) {
-            drawPieChart('expenseChart', expenseData, 'Expense by Category');
+            drawPieChart('expenseChart', expenseData, 'Расходы по категориям');
         }
     }
 
@@ -100,34 +100,36 @@
     }
 
     $(document).ready(function() {
-        $('#filterButton').on('click', function() {
-            var selectedDate = $('#datepicker').val();
-            var formattedDate = selectedDate ? formatDate(new Date(selectedDate)) : "";
+    $('#filterButton').on('click', function() {
+        var selectedDate = $('#datepicker').val();
+        var formattedDate = selectedDate ? formatDate(new Date(selectedDate)) : "";
 
-            $.ajax({
-                url: '/analysis/filter',
-                type: 'GET',
-                data: { selectedDate: formattedDate },
-                success: function(response) {
-                    updatePageWithData(response);
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                }
-            });
+        $.ajax({
+            url: '/analysis/filter',
+            type: 'GET',
+            data: { selectedDate: formattedDate },
+            success: function(response) {
+                updatePageWithData(response);
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
         });
     });
+});
 
-    function updatePageWithData(data) {
-        $('#totalIncome').text(data.totalIncome);
-        $('#totalExpense').text(data.totalExpense);
-        $('#balance').text(data.balance);
+function updatePageWithData(data) {
+    $('#totalIncome').text(data.totalIncome);
+    $('#totalExpense').text(data.totalExpense);
+    $('#balance').text(data.balance);
 
-        drawPieChart('incomeChart', data.incomeByCategory, 'Доходы по категориям');
-        drawPieChart('expenseChart', data.expenseByCategory, 'Расходы по категориям');
-    }
+    // Обновление диаграмм по категориям
+    drawPieChart('incomeChart', data.incomeByCategory, 'Доходы по категориям');
+    drawPieChart('expenseChart', data.expenseByCategory, 'Расходы по категориям');
+}
 
-</script>
+
+</script><br><br>
 <footer>
     <p>&copy; 2024 Finance Tracker</p>
 </footer>
